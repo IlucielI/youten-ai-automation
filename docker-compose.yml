@@ -1,0 +1,74 @@
+services:
+  # ============================================================================
+  # 1. BROWSER SERVICE (Remote Browserless Chromium with Live UI Debugger)
+  # ============================================================================
+  browserless:
+    image: ghcr.io/browserless/chromium:latest
+    container_name: automation-browserless
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - CONCURRENT=10
+      - TIMEOUT=60000
+      - KEEP_ALIVE=true
+    shm_size: '2gb'
+
+  # ============================================================================
+  # 2. AUTOMATION RUNNER REDIS (Internal Token Cache, Locks & Session Store)
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: automation-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 2s
+      retries: 5
+
+  # ============================================================================
+  # 3. DOCKERIZED PLAYWRIGHT TEST RUNNER (Execute full suite inside container)
+  # ============================================================================
+  test-runner:
+    image: mcr.microsoft.com/playwright:v1.50.1-noble
+    container_name: automation-test-runner
+    working_dir: /app
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      - CI=true
+      - BROWSER_WS_ENDPOINT=ws://browserless:3000
+      - AUTOMATION_REDIS_HOST=redis
+      - AUTOMATION_REDIS_PORT=6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - TARGET_REDIS_HOST=host.docker.internal
+      - TARGET_REDIS_PORT=6380
+    depends_on:
+      browserless:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: npm test
+
+  # ============================================================================
+  # 4. K6 LOAD & PERFORMANCE TESTING ENGINE
+  # ============================================================================
+  k6:
+    image: grafana/k6:latest
+    container_name: automation-k6
+    volumes:
+      - ./tests/performance:/scripts
+    environment:
+      - K6_OUT=stdout
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+

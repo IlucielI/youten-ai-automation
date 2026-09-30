@@ -1,0 +1,60 @@
+{
+  "name": "code-base-automation",
+  "version": "1.0.0",
+  "description": "Enterprise-ready End-to-End & API Test Automation Framework built with TypeScript, Playwright, and Page Object Model (POM)",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:e2e": "playwright test tests/e2e",
+    "test:api": "playwright test tests/api",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:regression": "playwright test --grep @regression",
+    "test:visual": "playwright test --grep @visual",
+    "test:visual:update": "playwright test --grep @visual --update-snapshots",
+    "perf:load": "docker compose run --rm k6 run /scripts/scenarios/api-load.js",
+    "perf:stress": "docker compose run --rm k6 run /scripts/scenarios/stress-test.js",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{ts,js,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,js,json,md}\"",
+    "browser:up": "docker compose up -d browserless",
+    "browser:down": "docker compose down",
+    "browser:logs": "docker compose logs -f browserless",
+    "redis:up": "docker compose up -d redis",
+    "redis:down": "docker compose stop redis",
+    "redis:logs": "docker compose logs -f redis",
+    "docker:test": "docker compose run --rm test-runner"
+  },
+  "keywords": [
+    "playwright",
+    "typescript",
+    "automation",
+    "test-framework",
+    "page-object-model",
+    "e2e",
+    "api-testing"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.50.1",
+    "@types/node": "^22.13.1",
+    "@typescript-eslint/eslint-plugin": "^8.71.0",
+    "@typescript-eslint/parser": "^8.71.0",
+    "dotenv": "^16.4.7",
+    "eslint": "^10.11.0",
+    "eslint-plugin-playwright": "^2.12.0",
+    "prettier": "^3.9.9",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1143.0",
+    "@aws-sdk/s3-request-presigner": "^3.1143.0",
+    "ioredis": "^6.0.0"
+  }
+}
