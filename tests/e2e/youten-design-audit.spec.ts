@@ -29,12 +29,11 @@ test.describe('Youten AI - Penpot & Design Token Compliance Audit @visual @desig
     const primaryButton = page
       .locator('button[type="submit"], button:has-text("Mulai"), button:has-text("Proses")')
       .first();
-    if (await primaryButton.isVisible()) {
-      const buttonAudit = await designAdapter.validateElementTokens(primaryButton, {
-        borderRadius: tokens.borderRadius.md,
-      });
-      expect(buttonAudit).toBeDefined();
-    }
+    await expect(primaryButton).toBeVisible();
+    const buttonAudit = await designAdapter.validateElementTokens(primaryButton, {
+      borderRadius: tokens.borderRadius.md,
+    });
+    expect(buttonAudit).toBeDefined();
   });
 
   test('Shared Viewer layout adheres to dark theme contrast and token specifications @audit @design', async ({
