@@ -1,6 +1,7 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from '../core/BasePage';
 import Logger from '../utils/logger';
+import { MeetingBotComponent } from './components/MeetingBotComponent';
 
 export class YoutenLandingPage extends BasePage {
   readonly urlPath = '/';
@@ -10,6 +11,8 @@ export class YoutenLandingPage extends BasePage {
   readonly urlTabTrigger: Locator;
   readonly urlInput: Locator;
   readonly processUrlButton: Locator;
+  readonly botTabTrigger: Locator;
+  readonly meetingBot: MeetingBotComponent;
 
   constructor(page: Page) {
     super(page);
@@ -22,6 +25,8 @@ export class YoutenLandingPage extends BasePage {
     this.processUrlButton = this.page
       .locator('button:has-text("Proses Tautan"), button:has-text("Mulai")')
       .first();
+    this.botTabTrigger = this.page.locator('[data-testid="tab-bot"]');
+    this.meetingBot = new MeetingBotComponent(this.page);
   }
 
   async open(): Promise<void> {
@@ -33,5 +38,12 @@ export class YoutenLandingPage extends BasePage {
   async uploadAudio(filePath: string): Promise<void> {
     Logger.step(`Uploading audio file from: ${filePath}`);
     await this.fileInput.setInputFiles(filePath);
+  }
+
+  async switchToMeetingBotTab(): Promise<void> {
+    Logger.step('Switching to Meeting Bot (Bot Rapat) tab');
+    await expect(this.botTabTrigger).toBeVisible();
+    await this.botTabTrigger.click();
+    await this.meetingBot.waitForVisible();
   }
 }
