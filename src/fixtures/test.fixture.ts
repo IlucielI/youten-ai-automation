@@ -1,7 +1,15 @@
 import { test as baseTest, expect } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
-import { SecureAreaPage } from '../pages/SecureAreaPage';
-import { CheckboxesPage } from '../pages/CheckboxesPage';
+import {
+  LoginPage,
+  SecureAreaPage,
+  CheckboxesPage,
+  YoutenLandingPage,
+  YoutenProcessingPage,
+  YoutenRecordingDetailPage,
+  YoutenShareViewerPage,
+  YoutenDashboardPage,
+  YoutenAuthPage,
+} from '../pages';
 import { ApiClient } from '../core/ApiClient';
 import { SqlDatabaseAdapter, DatabaseAdapter } from '../adapters/database/database.adapter';
 import { LlmAdapter } from '../adapters/llm/llm.adapter';
@@ -24,6 +32,12 @@ export interface CustomFixtures {
   loginPage: LoginPage;
   secureAreaPage: SecureAreaPage;
   checkboxesPage: CheckboxesPage;
+  youtenLandingPage: YoutenLandingPage;
+  youtenProcessingPage: YoutenProcessingPage;
+  youtenDetailPage: YoutenRecordingDetailPage;
+  youtenSharePage: YoutenShareViewerPage;
+  youtenDashboardPage: YoutenDashboardPage;
+  youtenAuthPage: YoutenAuthPage;
   apiClient: ApiClient;
   userService: UserService;
 
@@ -102,6 +116,30 @@ export const test = baseTest.extend<CustomFixtures>({
 
   checkboxesPage: async ({ page }, use) => {
     await use(new CheckboxesPage(page));
+  },
+
+  youtenLandingPage: async ({ page }, use) => {
+    await use(new YoutenLandingPage(page));
+  },
+
+  youtenProcessingPage: async ({ page }, use) => {
+    await use(new YoutenProcessingPage(page));
+  },
+
+  youtenDetailPage: async ({ page }, use) => {
+    await use(new YoutenRecordingDetailPage(page));
+  },
+
+  youtenSharePage: async ({ page }, use) => {
+    await use(new YoutenShareViewerPage(page));
+  },
+
+  youtenDashboardPage: async ({ page }, use) => {
+    await use(new YoutenDashboardPage(page));
+  },
+
+  youtenAuthPage: async ({ page }, use) => {
+    await use(new YoutenAuthPage(page));
   },
 
   apiClient: async ({ request }, use) => {
