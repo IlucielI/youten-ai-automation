@@ -9,6 +9,8 @@ import {
   YoutenShareViewerPage,
   YoutenDashboardPage,
   YoutenAuthPage,
+  YoutenWorkspacePage,
+  YoutenInvitationPage,
   MeetingBotComponent,
 } from '../pages';
 import { ApiClient } from '../core/ApiClient';
@@ -39,6 +41,8 @@ export interface CustomFixtures {
   youtenSharePage: YoutenShareViewerPage;
   youtenDashboardPage: YoutenDashboardPage;
   youtenAuthPage: YoutenAuthPage;
+  youtenWorkspacePage: YoutenWorkspacePage;
+  youtenInvitationPage: YoutenInvitationPage;
   meetingBot: MeetingBotComponent;
   apiClient: ApiClient;
   userService: UserService;
@@ -142,6 +146,14 @@ export const test = baseTest.extend<CustomFixtures>({
 
   youtenAuthPage: async ({ page }, use) => {
     await use(new YoutenAuthPage(page));
+  },
+
+  youtenWorkspacePage: async ({ page }, use) => {
+    await use(new YoutenWorkspacePage(page));
+  },
+
+  youtenInvitationPage: async ({ page }, use) => {
+    await use(new YoutenInvitationPage(page));
   },
 
   meetingBot: async ({ youtenLandingPage }, use) => {
