@@ -12,6 +12,7 @@ import {
   YoutenWorkspacePage,
   YoutenInvitationPage,
   MeetingBotComponent,
+  WorkspaceChatDrawerComponent,
 } from '../pages';
 import { ApiClient } from '../core/ApiClient';
 import { SqlDatabaseAdapter, DatabaseAdapter } from '../adapters/database/database.adapter';
@@ -44,6 +45,7 @@ export interface CustomFixtures {
   youtenWorkspacePage: YoutenWorkspacePage;
   youtenInvitationPage: YoutenInvitationPage;
   meetingBot: MeetingBotComponent;
+  workspaceChatDrawer: WorkspaceChatDrawerComponent;
   apiClient: ApiClient;
   userService: UserService;
 
@@ -154,6 +156,10 @@ export const test = baseTest.extend<CustomFixtures>({
 
   youtenInvitationPage: async ({ page }, use) => {
     await use(new YoutenInvitationPage(page));
+  },
+
+  workspaceChatDrawer: async ({ page }, use) => {
+    await use(new WorkspaceChatDrawerComponent(page));
   },
 
   meetingBot: async ({ youtenLandingPage }, use) => {
