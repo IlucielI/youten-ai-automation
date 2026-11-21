@@ -7,4 +7,6 @@ export * from './YoutenRecordingDetailPage';
 export * from './YoutenShareViewerPage';
 export * from './YoutenDashboardPage';
 export * from './YoutenAuthPage';
+export * from './YoutenWorkspacePage';
+export * from './YoutenInvitationPage';
 export * from './components';
