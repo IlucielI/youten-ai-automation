@@ -17,13 +17,11 @@ export class YoutenLandingPage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.heroHeading = this.page.locator('h1');
-    this.fileInput = this.page.locator('input[type="file"]');
-    this.urlTabTrigger = this.page
-      .locator('button:has-text("Impor Tautan"), button:has-text("URL")')
-      .first();
+    this.fileInput = this.page.locator('[data-testid="file-input"], input[type="file"]').first();
+    this.urlTabTrigger = this.page.locator('[data-testid="tab-url"]').first();
     this.urlInput = this.page.locator('input[placeholder*="http"], input[name="url"]').first();
     this.processUrlButton = this.page
-      .locator('button:has-text("Proses Tautan"), button:has-text("Mulai")')
+      .locator('button:has-text("Proses Tautan"), button:has-text("Import URL"), button:has-text("Mulai")')
       .first();
     this.botTabTrigger = this.page.locator('[data-testid="tab-bot"]');
     this.meetingBot = new MeetingBotComponent(this.page);

@@ -1,9 +1,6 @@
 import { test, expect } from '../../src/fixtures';
 
-test.use({
-  storageState: { cookies: [], origins: [] },
-  baseURL: process.env.YOUTEN_BASE_URL || 'https://youten.bayuanugerah.my.id',
-});
+const YOUTEN_BASE_URL = process.env.YOUTEN_BASE_URL || 'http://127.0.0.1:3000';
 
 test.describe('Youten AI - Multi-Meeting Ask AI (Folder & Workspace Intelligence) @smoke @regression @chat @workspace', () => {
   const mockWorkspaceId = 'ws_chat_e2e_001';
@@ -55,8 +52,7 @@ test.describe('Youten AI - Multi-Meeting Ask AI (Folder & Workspace Intelligence
   };
 
   test.beforeEach(async ({ page }) => {
-    const rawBaseUrl = process.env.YOUTEN_BASE_URL || 'https://youten.bayuanugerah.my.id';
-    const urlObj = new URL(rawBaseUrl);
+    const urlObj = new URL(YOUTEN_BASE_URL);
 
     // Pre-seed authentication and active workspace cookies
     await page.context().addCookies([

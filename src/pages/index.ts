@@ -9,4 +9,5 @@ export * from './YoutenDashboardPage';
 export * from './YoutenAuthPage';
 export * from './YoutenWorkspacePage';
 export * from './YoutenInvitationPage';
+export * from './YoutenSettingsPage';
 export * from './components';
