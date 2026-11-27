@@ -14,6 +14,7 @@ export class YoutenRecordingDetailPage extends BasePage {
   readonly momRenderer: Locator;
   readonly generalRenderer: Locator;
   readonly techReviewRenderer: Locator;
+  readonly salesDiscoveryRenderer: Locator;
   readonly markdownFallback: Locator;
   readonly transcriptList: Locator;
   readonly toggleChatButton: Locator;
@@ -41,6 +42,7 @@ export class YoutenRecordingDetailPage extends BasePage {
     this.momRenderer = this.page.locator('[data-testid="mom-summary-renderer"]');
     this.generalRenderer = this.page.locator('[data-testid="general-summary-renderer"]');
     this.techReviewRenderer = this.page.locator('[data-testid="tech-review-summary-renderer"]');
+    this.salesDiscoveryRenderer = this.page.locator('[data-testid="sales-discovery-summary-renderer"]');
     this.markdownFallback = this.page.locator('[data-testid="markdown-summary-fallback"]');
     this.transcriptList = this.page.locator('[data-testid="transcript-segments-list"]');
     this.toggleChatButton = this.page.locator('[data-testid="toggle-chat-panel-btn"]');

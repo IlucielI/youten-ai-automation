@@ -23,6 +23,22 @@ test.describe('Youten AI - Post-Refactor Comprehensive E2E Regressions @regressi
       });
     });
 
+    await page.route('**/api/workspaces', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ status: 'success', code: 'SUCCESS', data: [] }),
+      });
+    });
+
+    await page.route('**/api/templates*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ status: 'success', code: 'SUCCESS', data: [] }),
+      });
+    });
+
     await page.route('**/api/auth/refresh', async (route) => {
       refreshCalled += 1;
       await route.fulfill({
@@ -139,11 +155,12 @@ test.describe('Youten AI - Post-Refactor Comprehensive E2E Regressions @regressi
     await expect(page.locator('text="meeting_title"')).toHaveCount(0);
 
     // 3. Act & Assert: Ask AI recovers from 401 via silent refresh and streams response
+    const refreshesBeforeChat = refreshCalled;
     await youtenDetailPage.sendChatMessage('HLD LLD di mention oleh siapa ya');
     await expect(page.locator('text=HLD LLD disebutkan oleh Ki pada menit ke-00:10.')).toBeVisible();
     await expect(youtenDetailPage.chatEmptyResponseError).toHaveCount(0);
     await expect(youtenDetailPage.chatErrorBanner).toHaveCount(0);
-    expect(refreshCalled).toBe(1);
+    expect(refreshCalled - refreshesBeforeChat).toBe(1);
     expect(chatAttempts).toBe(2);
   });
 
@@ -511,6 +528,118 @@ test.describe('Youten AI - Post-Refactor Comprehensive E2E Regressions @regressi
     await expect(youtenSettingsPage.quotaCard).toBeVisible();
     await youtenSettingsPage.updateProfileName('Bayu Anugerah');
     await expect(youtenSettingsPage.fullNameInput).toHaveValue('Bayu Anugerah');
+  });
+
+  test('Sales Discovery renderer displays structured MEDDPICC data and Export downloads Markdown file @smoke @export', async ({
+    page,
+    youtenDetailPage,
+  }) => {
+    const recordingId = 'rec_e2e_sales_export_006';
+    const nowIso = new Date().toISOString();
+
+    await page.route('**/api/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          status: 'success',
+          code: 'SUCCESS',
+          data: { id: 'usr_1', email: 'user@example.com', full_name: 'Bayu', status: 'ACTIVE', role_name: 'Pro' },
+        }),
+      });
+    });
+
+    await page.route('**/api/workspaces', async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ status: 'success', data: [] }) });
+    });
+
+    await page.route(`**/api/recordings/${recordingId}`, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          status: 'success',
+          code: 'SUCCESS',
+          data: {
+            id: recordingId,
+            title: 'Discovery Call PT Maju Digital',
+            original_filename: 'discovery.mp3',
+            duration_seconds: 450,
+            status: 'COMPLETED',
+            selected_template: 'SALES_DISCOVERY',
+            is_guest: false,
+            created_at: nowIso,
+            segments: [],
+            active_summary: {
+              id: 'sum-sales-1',
+              version: 1,
+              template_category: 'SALES_DISCOVERY',
+              is_active: true,
+              created_at: nowIso,
+              structured_data: {
+                prospect_company: 'PT Maju Digital',
+                deal_stage_suggested: 'Discovery / Demo',
+                pain_points: [
+                  {
+                    pain: 'Transkrip manual memakan waktu 4 jam per rapat',
+                    cost_of_inaction: 'Biaya operasional membengkak $20k/bulan',
+                  },
+                ],
+                desired_outcomes: ['Otomatisasi notula rapat dengan ringkasan AI'],
+                meddpicc: {
+                  metrics: 'Penghematan waktu 80%',
+                  economic_buyer: 'VP Operations',
+                  decision_criteria: 'Akurasi transkrip bahasa Indonesia dan keamanan data',
+                  champion: 'Head of PMO',
+                  competition: 'Penyedia transkripsi konvensional',
+                },
+                objections: ['Kekhawatiran privasi data audio meeting internal'],
+                next_steps: [
+                  {
+                    action: 'Kirimkan security whitepaper dan NDA',
+                    owner: 'Account Executive',
+                    target_date: '2026-10-08',
+                  },
+                ],
+              },
+              markdown_content: '',
+            },
+            chapters: [],
+            highlights: [],
+          },
+        }),
+      });
+    });
+
+    await page.route(`**/api/recordings/${recordingId}/summaries`, async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ status: 'success', data: [] }) });
+    });
+
+    await page.route(`**/api/recordings/${recordingId}/chat*`, async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ status: 'success', data: [] }) });
+    });
+
+    await page.route(`**/api/recordings/${recordingId}/export*`, async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          'Content-Type': 'text/markdown; charset=utf-8',
+          'Content-Disposition': 'attachment; filename="discovery-call-pt-maju-digital.md"',
+        },
+        body: '# Discovery Call PT Maju Digital\n\n- Prospect: PT Maju Digital\n',
+      });
+    });
+
+    await youtenDetailPage.open(recordingId);
+    await expect(youtenDetailPage.salesDiscoveryRenderer).toBeVisible();
+    await expect(page.locator('text=PT Maju Digital').first()).toBeVisible();
+    await expect(page.locator('text=Transkrip manual memakan waktu 4 jam per rapat')).toBeVisible();
+
+    const downloadPromise = page.waitForEvent('download');
+    await youtenDetailPage.exportMenuTrigger.click();
+    await page.locator('[data-testid="export-option-markdown"]').click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toMatch(/\.md$/i);
   });
 });
 
