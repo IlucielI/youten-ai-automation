@@ -44,11 +44,23 @@ export default defineConfig({
     {
       name: 'chromium',
       testMatch: /tests\/e2e\/.*\.spec\.ts/,
+      testIgnore: /tests\/e2e\/youten-.*\.spec\.ts/,
       use: {
         ...devices['Desktop Chrome'],
         storageState: authFile,
       },
       dependencies: ['setup'],
+    },
+
+    // 2b. Youten AI isolated E2E regression suite
+    {
+      name: 'youten',
+      testMatch: /tests\/e2e\/youten-.*\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: process.env.YOUTEN_BASE_URL || 'http://127.0.0.1:3000',
+        storageState: { cookies: [], origins: [] },
+      },
     },
 
     // 3. REST API tests (isolated, fast execution without browser launch)

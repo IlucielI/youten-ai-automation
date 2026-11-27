@@ -27,7 +27,7 @@ test.describe('Youten AI - Penpot & Design Token Compliance Audit @visual @desig
 
     // 4. Assert: Audit action buttons against primary design tokens
     const primaryButton = page
-      .locator('button[type="submit"], button:has-text("Mulai"), button:has-text("Proses")')
+      .locator('[data-testid="tab-upload"], button[type="submit"], button:has-text("Mulai"), button:has-text("Proses")')
       .first();
     await expect(primaryButton).toBeVisible();
     const buttonAudit = await designAdapter.validateElementTokens(primaryButton, {

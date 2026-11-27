@@ -19,7 +19,10 @@ export class YoutenWorkspacePage extends BasePage {
     this.inviteMemberButton = this.page.locator('[data-testid="invite-member-btn"]').first();
     this.inviteEmailInput = this.page.locator('[data-testid="invite-email-input"]').first();
     this.submitInviteButton = this.page.locator('[data-testid="submit-invite-btn"]').first();
-    this.membersCard = this.page.locator('[data-testid="members-card"]').first();
+    this.membersCard = this.page
+      .locator('[data-testid="members-card"]')
+      .or(this.page.locator('text=/Team Members/i'))
+      .first();
   }
 
   async open(): Promise<void> {

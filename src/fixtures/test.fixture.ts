@@ -11,6 +11,7 @@ import {
   YoutenAuthPage,
   YoutenWorkspacePage,
   YoutenInvitationPage,
+  YoutenSettingsPage,
   MeetingBotComponent,
   WorkspaceChatDrawerComponent,
 } from '../pages';
@@ -44,6 +45,7 @@ export interface CustomFixtures {
   youtenAuthPage: YoutenAuthPage;
   youtenWorkspacePage: YoutenWorkspacePage;
   youtenInvitationPage: YoutenInvitationPage;
+  youtenSettingsPage: YoutenSettingsPage;
   meetingBot: MeetingBotComponent;
   workspaceChatDrawer: WorkspaceChatDrawerComponent;
   apiClient: ApiClient;
@@ -156,6 +158,10 @@ export const test = baseTest.extend<CustomFixtures>({
 
   youtenInvitationPage: async ({ page }, use) => {
     await use(new YoutenInvitationPage(page));
+  },
+
+  youtenSettingsPage: async ({ page }, use) => {
+    await use(new YoutenSettingsPage(page));
   },
 
   workspaceChatDrawer: async ({ page }, use) => {

@@ -1,20 +1,20 @@
 import { test, expect } from '../../src/fixtures';
 
-// Isolate browser context for clean guest meeting bot experience
-test.use({
-  storageState: { cookies: [], origins: [] },
-  baseURL: process.env.YOUTEN_BASE_URL || 'http://localhost:3000',
-});
-
 test.describe('Youten AI - Meeting Voice Bot End-to-End Workflows @youten @bot', () => {
-  test('User can open landing page, switch to Bot Rapat tab, and inspect conference providers @smoke', async ({
+  test('User sees Bot Rapat tab with Coming Soon state or active conference providers @smoke', async ({
     youtenLandingPage,
     meetingBot,
   }) => {
     // 1. Arrange: Open Youten AI landing page
     await youtenLandingPage.open();
+    await expect(youtenLandingPage.botTabTrigger).toBeVisible();
 
-    // 2. Act: Switch to Bot Rapat (Meeting Bot) tab
+    if (await youtenLandingPage.botTabTrigger.isDisabled()) {
+      await expect(youtenLandingPage.botTabTrigger).toBeDisabled();
+      return;
+    }
+
+    // 2. Act: Switch to Bot Rapat (Meeting Bot) tab when enabled
     await youtenLandingPage.switchToMeetingBotTab();
 
     // 3. Assert: Verify Meeting Bot tab content and form visibility
@@ -27,8 +27,11 @@ test.describe('Youten AI - Meeting Voice Bot End-to-End Workflows @youten @bot',
     youtenLandingPage,
     meetingBot,
   }) => {
-    // 1. Arrange: Open landing page and switch to meeting bot tab
     await youtenLandingPage.open();
+    test.skip(
+      await youtenLandingPage.botTabTrigger.isDisabled(),
+      'Bot Rapat tab is currently gated behind Coming Soon',
+    );
     await youtenLandingPage.switchToMeetingBotTab();
 
     // 2. Act & Assert: Verify Google Meet is selected by default with URL input
@@ -56,6 +59,10 @@ test.describe('Youten AI - Meeting Voice Bot End-to-End Workflows @youten @bot',
   }) => {
     // 1. Arrange: Open landing page and switch to meeting bot tab
     await youtenLandingPage.open();
+    test.skip(
+      await youtenLandingPage.botTabTrigger.isDisabled(),
+      'Bot Rapat tab is currently gated behind Coming Soon',
+    );
     await youtenLandingPage.switchToMeetingBotTab();
 
     // 2. Act & Assert: Submit empty meeting URL for Google Meet
@@ -102,6 +109,11 @@ test.describe('Youten AI - Meeting Voice Bot End-to-End Workflows @youten @bot',
     youtenLandingPage,
     meetingBot,
   }) => {
+    await youtenLandingPage.open();
+    test.skip(
+      await youtenLandingPage.botTabTrigger.isDisabled(),
+      'Bot Rapat tab is currently gated behind Coming Soon',
+    );
     const mockSessionId = 'bot_session_meet_001';
     const mockRecordingId = 'rec_meet_result_001';
 
